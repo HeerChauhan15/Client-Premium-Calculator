@@ -30,12 +30,16 @@ FILE_MAP = {
     "Business Loan": "bl.xlsx",
 }
 
-# GST is fixed and always applied on top of the Loader-adjusted rate.
+# GST is fixed and always applied on top of the rate.
 GST_RATE_FIXED = 18.0
 
+# Loader has been removed — kept at 0 so the formula below still works
+# unchanged (Rate After Loader = Base Rate / (1 - 0/100) = Base Rate).
+LOADER_PCT_FIXED = 0.0
+
 # ============================================
-# LOADER + GST FORMULA (applied to every rate before premium is computed):
-#   Rate After Loader = Base Rate / (1 - Loader% / 100)
+# GST FORMULA (applied to every rate before premium is computed):
+#   Rate After Loader = Base Rate / (1 - Loader% / 100)   [Loader is fixed at 0]
 #   Final Rate         = Rate After Loader x (1 + GST% / 100)
 # ============================================
 def apply_loader_and_gst(base_rate, loader_pct, gst_pct=GST_RATE_FIXED):
@@ -132,21 +136,8 @@ cover_type = COVER_TYPE_FIXED
 
 loan_type = st.selectbox("Select Loan Type", ["Home Loan", "Business Loan"])
 
-# ============================================
-# SHARED LOADER % — applied to every rate (Manual + Bulk)
-# before computing premium. GST @ 18% is then added automatically on top.
-# ============================================
-st.subheader("⚙️ Loader Setting")
-loader_pct_input = st.number_input(
-    "Loader % (optional — applied to all rate lookups below; GST @ 18% is then added automatically)",
-    min_value=0.0,
-    max_value=99.99,
-    value=None,
-    step=1.0,
-    placeholder="Enter loader % (optional, defaults to 0)",
-    key="shared_loader_pct"
-)
-loader_pct = loader_pct_input if loader_pct_input is not None else 0.0
+# Loader input removed — always 0. GST @ 18% is still applied automatically.
+loader_pct = LOADER_PCT_FIXED
 
 # ============================================
 # SUM ASSURED RANGE — rates in the backend files are per ₹1,00,000
@@ -199,7 +190,7 @@ if st.button("Get Rate", type="primary"):
         premium = final_rate * (sum_assured_manual / 100000)
         st.success(
             f"✅ {life_type} | {loan_type} | {cover_type} Cover | Age {age} | Tenure {tenure} yrs | "
-            f"Sum Assured ₹{sum_assured_manual:,} | Loader {loader_pct}% | GST {GST_RATE_FIXED}%"
+            f"Sum Assured ₹{sum_assured_manual:,} | GST {GST_RATE_FIXED}%"
         )
         st.metric("Premium", f"₹ {premium:,.2f}")
     except Exception as e:
@@ -232,7 +223,7 @@ if uploaded_file is not None:
         st.dataframe(df.head())
 
         if loan_type == "Home Loan":
-            min_t, max_t = 5, 25
+            min_t, max_t = 2, 25
         else:
             min_t, max_t = 2, 10
 
