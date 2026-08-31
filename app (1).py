@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("💰 Aviva GCL Insurance Premium Calculator")
+st.title("💰 Client Premium Calculator")
 st.markdown("Select plan details below")
 
 # ============================================
