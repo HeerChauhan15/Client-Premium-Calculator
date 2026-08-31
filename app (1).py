@@ -27,7 +27,7 @@ COVER_TYPE_FIXED = "Reducing"
 # fixed above, so the file only needs to vary by loan_type.
 FILE_MAP = {
     "Home Loan": "homeloan.xlsx",
-    "Business Loan":       "lap.xlsx",
+    "Business Loan": "lap.xlsx",
 }
 
 # GST is fixed and always applied on top of the Loader-adjusted rate.
@@ -130,7 +130,7 @@ def find_sum_assured_columns(df):
 life_type = LIFE_TYPE_FIXED
 cover_type = COVER_TYPE_FIXED
 
-loan_type = st.selectbox("Select Loan Type", ["Home Loan", "LAP"])
+loan_type = st.selectbox("Select Loan Type", ["Home Loan", "Business Loan"])
 
 # ============================================
 # SHARED LOADER % — applied to every rate (Manual + Bulk)
