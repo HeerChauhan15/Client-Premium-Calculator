@@ -23,15 +23,11 @@ st.markdown("Select plan details below")
 LIFE_TYPE_FIXED = "Single Life"
 COVER_TYPE_FIXED = "Reducing"
 
+# Only two rate files now — one per Loan Type. Life Type and Cover Type are
+# fixed above, so the file only needs to vary by loan_type.
 FILE_MAP = {
-    ("Level",    "Single Life", "Home Loan"): "Homeloan Single Life.xlsx",
-    ("Level",    "Single Life", "LAP"):       "LAP Single Life.xlsx",
-    ("Level",    "Joint Life",  "Home Loan"): "Homeloan Joint Life.xlsx",
-    ("Level",    "Joint Life",  "LAP"):       "LAP Joint Life.xlsx",
-    ("Reducing", "Joint Life",  "Home Loan"): "Reducing- Homeloan.xlsx",
-    ("Reducing", "Joint Life",  "LAP"):       "Reducing- LAP.xlsx",
-    ("Reducing", "Single Life", "Home Loan"): "Reducing- Single- Homeloan.xlsx",
-    ("Reducing", "Single Life", "LAP"):       "Reducing- Single- LAP.xlsx",
+    "Home Loan": "homeloan.xlsx",
+    "LAP":       "lap.xlsx",
 }
 
 # GST is fixed and always applied on top of the Loader-adjusted rate.
@@ -49,7 +45,7 @@ def apply_loader_and_gst(base_rate, loader_pct, gst_pct=GST_RATE_FIXED):
 
 
 def load_rate_table(cover_type, life_type, loan_type):
-    fname = FILE_MAP[(cover_type, life_type, loan_type)]
+    fname = FILE_MAP[loan_type]
     if not os.path.exists(fname):
         raise FileNotFoundError(
             f"File not found: '{fname}' — Please make sure this file is in the GitHub repo."
