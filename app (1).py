@@ -27,7 +27,7 @@ COVER_TYPE_FIXED = "Reducing"
 # fixed above, so the file only needs to vary by loan_type.
 FILE_MAP = {
     "Home Loan": "homeloan.xlsx",
-    "LAP":       "lap.xlsx",
+    "Business Loan":       "lap.xlsx",
 }
 
 # GST is fixed and always applied on top of the Loader-adjusted rate.
