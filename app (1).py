@@ -147,7 +147,7 @@ loader_pct = LOADER_PCT_FIXED
 if loan_type == "Home Loan":
     sa_min, sa_max = 100000, 6000000
 else:
-    sa_min, sa_max = 100000, 4000000
+    sa_min, sa_max = 100000, 5000000
 
 st.divider()
 
