@@ -8,15 +8,13 @@ from openpyxl.styles import Font, Alignment
 from openpyxl.utils import get_column_letter
 
 st.set_page_config(
-    page_title="MURUDE SAHAKARI - Premium Calculator",
-    page_icon="💰",
+    page_title="MURUDE SAHAKARI",
+    page_icon="🏦",
     layout="wide"
 )
 
-st.title("💰 Client Premium Calculator")
-st.markdown(
-    "### [MURUDE SAHAKARI](https://admin.softscooptechnologies.com/client-detail/139)"
-)
+st.title("🏦 MURUDE SAHAKARI")
+st.subheader("Client Premium Calculator")
 st.markdown("Select plan details below")
 
 # ============================================
@@ -28,6 +26,7 @@ COVER_TYPE_FIXED = "Reducing"
 
 # Only two rate files now — one per Loan Type. Life Type and Cover Type are
 # fixed above, so the file only needs to vary by loan_type.
+# NOTE: File names must match exactly (including the space after the hyphen).
 FILE_MAP = {
     "Home Loan": "Homeloan- Reducing.xlsx",
     "Business Loan": "Business Loan- Reducing.xlsx",
