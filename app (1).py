@@ -8,7 +8,7 @@ from openpyxl.styles import Font, Alignment
 from openpyxl.utils import get_column_letter
 
 st.set_page_config(
-    page_title="MURUDE SAHAKARI",
+    page_title="MURUDE SAHAKARI PATSANSTHA MARYADIT	",
     page_icon="🏦",
     layout="wide"
 )
@@ -147,7 +147,7 @@ loader_pct = LOADER_PCT_FIXED
 if loan_type == "Home Loan":
     sa_min, sa_max = 100000, 6000000
 else:
-    sa_min, sa_max = 100000, 5000000
+    sa_min, sa_max = 100000, 4000000
 
 st.divider()
 
@@ -188,13 +188,19 @@ if st.button("Get Rate", type="primary"):
     try:
         df_rates, tenure_map = load_rate_table(cover_type, life_type, loan_type)
         base_rate = get_rate(df_rates, tenure_map, age, tenure)
-        final_rate = apply_loader_and_gst(base_rate, loader_pct)
-        premium = final_rate * (sum_assured_manual / 100000)
+        # Net premium = premium before GST; GST = 18% of net; Gross = Net + GST
+        net_rate = base_rate / (1 - (loader_pct / 100.0))
+        net_premium = net_rate * (sum_assured_manual / 100000)
+        gst_amount = net_premium * (GST_RATE_FIXED / 100.0)
+        gross_premium = net_premium + gst_amount
         st.success(
             f"✅ {life_type} | {loan_type} | {cover_type} Cover | Age {age} | Tenure {tenure} yrs | "
             f"Sum Assured ₹{sum_assured_manual:,} | GST {GST_RATE_FIXED}%"
         )
-        st.metric("Premium", f"₹ {premium:,.2f}")
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Net Premium", f"₹ {net_premium:,.2f}")
+        m2.metric(f"GST Amount ({GST_RATE_FIXED:.0f}%)", f"₹ {gst_amount:,.2f}")
+        m3.metric("Gross Premium", f"₹ {gross_premium:,.2f}")
     except Exception as e:
         st.error(f"Error: {e}")
 
