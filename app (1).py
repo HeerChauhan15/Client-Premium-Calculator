@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🏦 MURUDE SAHAKARI")
+st.title("🏦 MURUDE SAHAKARI PATSANSTHA MARYADIT")
 st.subheader("Client Premium Calculator")
 st.markdown("Select plan details below")
 
