@@ -157,7 +157,7 @@ st.divider()
 # MANUAL SECTION
 # ============================================
 
-st.subheader("🔢 Manual Rate Lookup")
+st.subheader("🔢 Individual Premium Calculator")
 
 # Tenure range (years)
 # Home Loan: 2 – 25 | Business Loan: 2 – 10
@@ -214,17 +214,33 @@ st.divider()
 # EXCEL UPLOAD SECTION
 # ============================================
 
-st.subheader("📂 Upload Member Data for Bulk Rate Lookup")
+head_col, info_col = st.columns([4, 1])
+with head_col:
+    st.subheader("📂 Group Premium Calculator")
+with info_col:
+    # Popover = the "popup" for Excel requirements; keeps the page clean.
+    with st.popover("ℹ️ Excel format", use_container_width=True):
+        st.markdown("**Required columns**")
+        st.markdown(
+            "- **Name**\n"
+            "- **Age**\n"
+            "- **Sum Assured** (or **Loan Outstanding** if blank)\n"
+            "- **Tenure** (in years)"
+        )
+        st.markdown("**Limits for current selection**")
+        st.markdown(
+            f"- Loan Type: **{loan_type}**\n"
+            f"- Sum Assured: ₹{sa_min:,} – ₹{sa_max:,}\n"
+            f"- Tenure: {min_tenure} – {max_tenure} yrs\n"
+            f"- Age: 18 – 65"
+        )
+        st.caption("Each row uses its own Sum Assured from the Excel.")
 
-st.markdown(
-    "Your Excel must have at least: **Name**, **Age**, **Sum Assured** (or **Loan "
-    "Outstanding** if Sum Assured isn't present), and a **Tenure** column (in years)."
+uploaded_file = st.file_uploader(
+    f"Upload Excel File for {loan_type}",
+    type=["xlsx"],
+    help="Rates are picked based on the Loan Type selected above."
 )
-
-st.caption(f"Each row uses its own Sum Assured from the Excel (must be between ₹{sa_min:,} and ₹{sa_max:,}).")
-st.warning("⚠️ Please make sure you have selected **Loan Type** above before uploading your Excel file.")
-
-uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 
 if uploaded_file is not None:
     try:
