@@ -162,7 +162,7 @@ st.subheader("🔢 Individual Premium Calculator")
 # Tenure range (years)
 # Home Loan: 2 – 25 | Business Loan: 2 – 10
 if loan_type == "Home Loan":
-    min_tenure, max_tenure = 2, 25
+    min_tenure, max_tenure = 5, 25
 else:  # Business Loan
     min_tenure, max_tenure = 2, 10
 
