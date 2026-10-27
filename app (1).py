@@ -143,11 +143,13 @@ loader_pct = LOADER_PCT_FIXED
 
 # ============================================
 # SUM ASSURED RANGE — rates in the backend files are per ₹1,00,000
+# Home Loan:     ₹1,00,000 – ₹60,00,000
+# Business Loan: ₹50,000   – ₹50,00,000
 # ============================================
 if loan_type == "Home Loan":
     sa_min, sa_max = 100000, 6000000
-else:
-    sa_min, sa_max = 100000, 4000000
+else:  # Business Loan
+    sa_min, sa_max = 50000, 5000000
 
 st.divider()
 
@@ -157,9 +159,11 @@ st.divider()
 
 st.subheader("🔢 Manual Rate Lookup")
 
+# Tenure range (years)
+# Home Loan: 2 – 25 | Business Loan: 2 – 10
 if loan_type == "Home Loan":
     min_tenure, max_tenure = 2, 25
-else:
+else:  # Business Loan
     min_tenure, max_tenure = 2, 10
 
 col3, col4 = st.columns(2)
@@ -232,7 +236,7 @@ if uploaded_file is not None:
 
         if loan_type == "Home Loan":
             min_t, max_t = 2, 25
-        else:
+        else:  # Business Loan
             min_t, max_t = 2, 10
 
         df_rates, tenure_map = load_rate_table(cover_type, life_type, loan_type)
