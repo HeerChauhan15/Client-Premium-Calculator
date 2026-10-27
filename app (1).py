@@ -142,14 +142,19 @@ loan_type = st.selectbox("Select Loan Type", ["Home Loan", "Business Loan"])
 loader_pct = LOADER_PCT_FIXED
 
 # ============================================
-# SUM ASSURED RANGE — rates in the backend files are per ₹1,00,000
-# Home Loan:     ₹1,00,000 – ₹60,00,000
-# Business Loan: ₹50,000   – ₹50,00,000
+# LIMITS — defined ONCE here and used by BOTH the Individual and Group
+# Premium Calculators (rates in the backend files are per ₹1,00,000)
+# Home Loan:     Sum Assured ₹1,00,000 – ₹60,00,000 | Tenure 5 – 25 yrs
+# Business Loan: Sum Assured ₹50,000   – ₹50,00,000 | Tenure 2 – 10 yrs
 # ============================================
+AGE_MIN, AGE_MAX = 18, 65
+
 if loan_type == "Home Loan":
-    sa_min, sa_max = 100000, 6000000
+    sa_min, sa_max = 50000, 6000000
+    min_tenure, max_tenure = 5, 25
 else:  # Business Loan
     sa_min, sa_max = 50000, 5000000
+    min_tenure, max_tenure = 2, 10
 
 st.divider()
 
@@ -159,33 +164,32 @@ st.divider()
 
 st.subheader("🔢 Individual Premium Calculator")
 
-# Tenure range (years)
-# Home Loan: 2 – 25 | Business Loan: 2 – 10
-if loan_type == "Home Loan":
-    min_tenure, max_tenure = 5, 25
-else:  # Business Loan
-    min_tenure, max_tenure = 2, 10
-
+# (keys include loan_type so limits reset cleanly when the loan type changes)
 col3, col4 = st.columns(2)
 with col3:
-    age = st.number_input("Enter Age", min_value=18, max_value=65, value=30, step=1)
+    age = st.number_input(
+        "Enter Age", min_value=AGE_MIN, max_value=AGE_MAX, value=30, step=1,
+        key=f"age_manual_{loan_type}"
+    )
 with col4:
     tenure = st.number_input(
-        "Enter Tenure",
+        "Enter Tenure (Years)",
         min_value=min_tenure,
         max_value=max_tenure,
         value=min_tenure,
-        step=1
+        step=1,
+        help=f"Tenure in years ({min_tenure} – {max_tenure}).",
+        key=f"tenure_manual_{loan_type}"
     )
-    st.caption("📅 Tenure is in Years")
 
 sum_assured_manual = st.number_input(
     "Select Sum Assured (₹)",
-    min_value=0,
+    min_value=sa_min,
+    max_value=sa_max,
     value=sa_min,
     step=1,
-    help="Enter the exact Sum Assured for this member.",
-    key="sa_manual"
+    help=f"Enter the exact Sum Assured for this member (₹{sa_min:,} – ₹{sa_max:,}).",
+    key=f"sa_manual_{loan_type}"
 )
 
 if st.button("Get Rate", type="primary"):
@@ -232,7 +236,7 @@ with info_col:
             f"- Loan Type: **{loan_type}**\n"
             f"- Sum Assured: ₹{sa_min:,} – ₹{sa_max:,}\n"
             f"- Tenure: {min_tenure} – {max_tenure} yrs\n"
-            f"- Age: 18 – 65"
+            f"- Age: {AGE_MIN} – {AGE_MAX}"
         )
         st.caption("Each row uses its own Sum Assured from the Excel.")
 
@@ -250,10 +254,8 @@ if uploaded_file is not None:
         st.subheader("Uploaded Data Preview")
         st.dataframe(df.head())
 
-        if loan_type == "Home Loan":
-            min_t, max_t = 2, 25
-        else:  # Business Loan
-            min_t, max_t = 2, 10
+        # Same limits as the Individual Premium Calculator
+        min_t, max_t = min_tenure, max_tenure
 
         df_rates, tenure_map = load_rate_table(cover_type, life_type, loan_type)
 
@@ -303,10 +305,12 @@ if uploaded_file is not None:
                 if r_sa is None:
                     raise ValueError("Sum Assured / Loan Outstanding value missing")
 
-                if r_age is None or r_age < 18 or r_age > 65:
-                    raise ValueError("Age must be between 18 and 65")
+                if r_age is None or r_age < AGE_MIN or r_age > AGE_MAX:
+                    raise ValueError(f"Age must be between {AGE_MIN} and {AGE_MAX}")
                 if r_tenure is None or r_tenure < min_t or r_tenure > max_t:
                     raise ValueError(f"Tenure must be between {min_t} and {max_t} yrs")
+                if r_sa < sa_min or r_sa > sa_max:
+                    raise ValueError(f"Sum Assured must be between ₹{sa_min:,} and ₹{sa_max:,}")
 
                 r_base = get_rate(df_rates, tenure_map, r_age, r_tenure)
                 r_final = apply_loader_and_gst(r_base, loader_pct)
